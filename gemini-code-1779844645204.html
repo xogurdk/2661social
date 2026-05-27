@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미디어 영수증 플랫폼</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        .receipt-font {
+            font-family: 'Courier Prime', 'Noto Sans KR', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 p-4 md:p-8 min-h-screen">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm space-y-6">
+            
+            <div>
+                <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    👤 시민 기본 정보
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-500 block mb-1">학교명</label>
+                        <input type="text" id="schoolInput" placeholder="예: 화명초등학교" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 block mb-1">학년/반/번호</label>
+                        <input type="text" id="classInput" placeholder="예: 6학년 5반 1번" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 block mb-1">시민 이름</label>
+                        <input type="text" id="nameInput" placeholder="예: 홍길동" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-200">
+
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        🎬 미디어 소비 항목 추가
+                    </h2>
+                    <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-1 rounded-md font-medium">어제 하루 이용 기준</span>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs text-slate-500 block mb-1">미디어 종류</label>
+                            <select id="mediaType" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                                <option value="인터넷 사이트(누리집)">인터넷 사이트(누리집)</option>
+                                <option value="동영상 플랫폼">동영상 플랫폼</option>
+                                <option value="SNS">SNS</option>
+                                <option value="게임">게임</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 block mb-1">채널/출처 이름</label>
+                            <input type="text" id="channelName" placeholder="예: 유튜브 식빵쌤 채널, KBS 뉴스" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-500 block mb-1">사용 시간 (분 단위)</label>
+                            <input type="number" id="useTime" placeholder="예: 30" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-slate-500 block mb-1">주요 이용 목적</label>
+                        <select id="usePurpose" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                            <option value="재미와 오락을 위해 (웹툰 시청, 오락 영상 등)">재미와 오락을 위해 (웹툰 시청, 오락 영상 등)</option>
+                            <option value="정보 탐색을 위해 (뉴스, 시사, 정보 검색 등)">정보 탐색을 위해 (뉴스, 시사, 정보 검색 등)</option>
+                            <option value="학습 및 교육을 위해 (온라인 강의, 교육 콘텐츠 등)">학습 및 교육을 위해 (온라인 강의, 교육 콘텐츠 등)</option>
+                            <option value="소통 및 교류를 위해 (메신저, SNS 소통 등)">소통 및 교류를 위해 (메신저, SNS 소통 등)</option>
+                        </select>
+                    </div>
+
+                    <button onclick="addMediaItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium p-2.5 rounded-lg text-sm transition-colors cursor-pointer">
+                        + 영수증에 추가하기
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <p class="text-xs text-slate-400 mb-2">💡 빠른 템플릿 선택 추가:</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="applyTemplate('인터넷 사이트(누리집)', '환경 블로그 검색', 25, '정보 탐색을 위해 (뉴스, 시사, 정보 검색 등)')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1.5 rounded-full transition-colors cursor-pointer">🔍 환경블로그 검색(25분)</button>
+                        <button onclick="applyTemplate('인터넷 사이트(누리집)', '안전 온라인 서명', 15, '정보 탐색을 위해 (뉴스, 시사, 정보 검색 등)')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1.5 rounded-full transition-colors cursor-pointer">✍️ 안전온라인 서명(15분)</button>
+                        <button onclick="applyTemplate('동영상 플랫폼', '사회 인강 시청', 60, '학습 및 교육을 위해 (온라인 강의, 교육 콘텐츠 등)')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1.5 rounded-full transition-colors cursor-pointer">🎓 사회 인강 시청(60분)</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-200">
+
+            <div>
+                <h2 class="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+                    🧭 오늘의 성찰 일지 쓰기
+                </h2>
+                <p class="text-xs text-slate-400 mb-4">오늘 나의 미디어 영수증을 바탕으로 질문에 답해 보세요.</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 block mb-1">Q1. 내가 가장 많은 시간을 소비한 목적은 무엇이며, 어떤 의미가 있었나요?</label>
+                        <textarea id="reflectionQ1" rows="3" placeholder="예: 유튜브 오락 영상을 보는데 가장 많은 시간을 썼습니다. 재미는 있었지만 민주 시민 소식을 알아보기 위한 정보 탐색 시간이 부족했던 것 같아 아쉽습니다." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 block mb-1">Q2. 민주주의 사회의 건강한 일원이 되기 위해 앞으로 미디어를 어떻게 이용할 것인가요?</label>
+                        <textarea id="reflectionQ2" rows="3" placeholder="예: 앞으로는 흥미 위주의 소비를 줄이고, 매주 2회 이상 우리 지역이나 사회 소식을 다룬 공신력 있는 언론 보도 매체를 찾아 분석적으로 읽어보겠습니다." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="downloadReceiptPNG()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-lg text-base transition-colors shadow-md cursor-pointer">
+                💾 진짜 영수증 이미지(PNG)로 다운로드하기
+            </button>
+
+        </div>
+
+        <div class="lg:col-span-5 flex flex-col items-center">
+            <div class="sticky top-6 w-full max-w-sm">
+                <p class="text-sm font-bold text-slate-500 mb-2 text-center">🧾 미디어 영수증 미리보기</p>
+                
+                <div id="receiptContainer" class="bg-white p-6 shadow-xl border border-slate-200 text-black receipt-font text-xs relative overflow-hidden">
+                    <div class="border-t-4 border-dashed border-black mb-4"></div>
+                    
+                    <div class="text-center space-y-1 mb-6">
+                        <h1 class="text-xl font-bold tracking-wider">MEDIA RECEIPT</h1>
+                        <p class="text-[10px] text-gray-600">-----------------------------------------</p>
+                        <p class="font-bold text-sm">미디어 소비 영수증</p>
+                        <p id="receiptDate" class="text-[10px]"></p>
+                    </div>
+
+                    <div class="space-y-1 mb-4 border-b border-dashed border-black pb-3">
+                        <div class="flex justify-between"><span>소속:</span><span id="rSchool">-</span></div>
+                        <div class="flex justify-between"><span>학급:</span><span id="rClass">-</span></div>
+                        <div class="flex justify-between"><span>성명:</span><span id="rName">-</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-12 font-bold border-b border-black pb-1 mb-2">
+                        <div class="col-span-8">품목 / 이용 목적</div>
+                        <div class="col-span-4 text-right">시간(분)</div>
+                    </div>
+
+                    <div id="receiptItemList" class="space-y-3 min-h-[100px]">
+                        <p class="text-center text-gray-400 py-8 italic">추가된 내역이 없음</p>
+                    </div>
+
+                    <div class="border-t border-black mt-4 pt-2 space-y-1 font-bold text-sm">
+                        <div class="flex justify-between items-center text-base">
+                            <span>TOTAL TIME:</span>
+                            <span><span id="rTotalTime">0</span> 분</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-dashed border-black mt-5 pt-3 space-y-3">
+                        <div class="text-center font-bold tracking-widest text-[10px] bg-black text-white py-0.5 mb-1">MEMO / REFLECTION</div>
+                        <div>
+                            <p class="font-bold text-[11px] mb-1">Q1. 가장 많은 시간을 소비한 목적과 의미</p>
+                            <p id="rQ1" class="text-gray-700 leading-relaxed whitespace-pre-wrap break-all pl-1 italic">작성된 내용이 없음.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-[11px] mb-1">Q2. 민주사회 일원으로서의 향후 다짐</p>
+                            <p id="rQ2" class="text-gray-700 leading-relaxed whitespace-pre-wrap break-all pl-1 italic">작성된 내용이 없음.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-dashed border-black text-center space-y-2">
+                        <p class="text-[10px] font-bold tracking-widest">THANK YOU FOR YOUR REFLECTION</p>
+                        <div class="inline-block tracking-tighter text-lg font-normal opacity-80 font-[monospace] select-none scale-y-150 py-1">
+                            ||||| | |||| || ||||| ||| || |||| || |||
+                        </div>
+                        <p class="text-[9px] text-gray-500">정직한 성찰은 건강한 디지털 시민의 시작임</p>
+                    </div>
+
+                    <div class="border-b-4 border-dashed border-black mt-4"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 데이터 보관용 배열
+        let mediaItems = [];
+
+        // 초기화 및 실시간 동기화 이벤트 등록
+        window.onload = function() {
+            // 오늘 날짜 표시 설정
+            const today = new Date();
+            const dateStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0') + ' ' + String(today.getHours()).padStart(2, '0') + ':' + String(today.getMinutes()).padStart(2, '0');
+            document.getElementById('receiptDate').innerText = '발행일시: ' + dateStr;
+
+            // 기본 정보 실시간 바인딩
+            bindInputToReceipt('schoolInput', 'rSchool', '학교 미지정');
+            bindInputToReceipt('classInput', 'rClass', '학급 미지정');
+            bindInputToReceipt('nameInput', 'rName', '이름 미지정');
+
+            // 성찰 일지 실시간 바인딩
+            bindInputToReceipt('reflectionQ1', 'rQ1', '작성된 내용이 없음.');
+            bindInputToReceipt('reflectionQ2', 'rQ2', '작성된 내용이 없음.');
+        };
+
+        // 입력 폼과 영수증 요소를 동기화하는 함수
+        function bindInputToReceipt(inputId, receiptId, defaultText) {
+            const inputEl = document.getElementById(inputId);
+            const receiptEl = document.getElementById(receiptId);
+            
+            inputEl.addEventListener('input', function() {
+                receiptEl.innerText = inputEl.value.trim() || defaultText;
+            });
+        }
+
+        // 빠른 템플릿 적용 함수
+        function applyTemplate(type, channel, time, purpose) {
+            document.getElementById('mediaType').value = type;
+            document.getElementById('channelName').value = channel;
+            document.getElementById('useTime').value = time;
+            document.getElementById('usePurpose').value = purpose;
+        }
+
+        // 품목 영수증 추가 함수
+        function addMediaItem() {
+            const type = document.getElementById('mediaType').value;
+            const channel = document.getElementById('channelName').value.trim();
+            const time = parseInt(document.getElementById('useTime').value);
+            const purpose = document.getElementById('usePurpose').value;
+
+            if (!channel) {
+                alert('채널/출처 이름을 입력해야 함.');
+                return;
+            }
+            if (!time || time <= 0) {
+                alert('올바른 사용 시간을 입력해야 함.');
+                return;
+            }
+
+            // 배열 추가
+            mediaItems.push({ type, channel, time, purpose });
+            
+            // UI 리렌더링
+            renderItems();
+
+            // 입력창 초기화 (종류, 목적 제외)
+            document.getElementById('channelName').value = '';
+            document.getElementById('useTime').value = '';
+        }
+
+        // 품목 삭제 함수
+        function deleteItem(index) {
+            mediaItems.splice(index, 1);
+            renderItems();
+        }
+
+        // 영수증 품목 리렌더링 및 합계 계산 함수
+        function renderItems() {
+            const listContainer = document.getElementById('receiptItemList');
+            const totalTimeEl = document.getElementById('rTotalTime');
+            
+            if (mediaItems.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-gray-400 py-8 italic">추가된 내역이 없음</p>`;
+                totalTimeEl.innerText = '0';
+                return;
+            }
+
+            let html = '';
+            let totalTime = 0;
+
+            mediaItems.forEach((item, index) => {
+                totalTime += item.time;
+                html += `
+                    <div class="group relative grid grid-cols-12 gap-1 items-start border-b border-gray-100 pb-2">
+                        <div class="col-span-9 space-y-0.5">
+                            <div class="font-bold text-gray-900">[${item.type}] ${item.channel}</div>
+                            <div class="text-[10px] text-gray-500 leading-tight">목적: ${item.purpose}</div>
+                        </div>
+                        <div class="col-span-3 text-right font-bold text-gray-900 flex justify-end items-center gap-1">
+                            <span>${item.time}</span>
+                            <button onclick="deleteItem(${index})" class="text-red-500 font-normal text-[9px] border border-red-200 px-1 rounded hover:bg-red-50 cursor-pointer print:hidden">삭제</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+            totalTimeEl.innerText = totalTime;
+        }
+
+        // 영수증 이미지화 및 다운로드 기능
+        function downloadReceiptPNG() {
+            const receipt = document.getElementById('receiptContainer');
+            
+            // 버튼 숨김 처리 등 스타일 조정 후 캡처
+            html2canvas(receipt, {
+                scale: 2, // 해상도 향상
+                backgroundColor: '#ffffff',
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const name = document.getElementById('nameInput').value.trim() || '미디어시민';
+                link.download = `${name}_미디어_영수증.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('오류 발생:', err);
+                alert('이미지 생성 중 오류 발생함.');
+            });
+        }
+    </script>
+</body>
+</html>
